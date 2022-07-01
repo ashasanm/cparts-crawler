@@ -82,7 +82,7 @@ class Tokopedia(Marketplace):
     
     def extract(self):
         self.main_driver.get(self.url)
-        searchbar_xpath = '//*[@id="search-container"]/form/div/div/div/input'
+        searchbar_xpath = '//*[@id="header-main-wrapper"]/div[2]/div[2]/div/div/div/div/input'
         self.find_product(searchbar_xpath)
         overlay1_xpath = "//*[contains(text(),'Oke, Lanjut Belanja')]"
         overlay2_xpath = "/html/body/div[5]/div[7]/section/div/div/div[2]/div"
@@ -105,7 +105,7 @@ class Tokopedia(Marketplace):
             for link in links:
                 try:
                     item = self.get_detail(sub_driver, link)
-                    if item['title'] == '':
+                    if item['title'] == '' or item['price'] == '':
                         continue
                     # Check if product already inside Database
                     if self.product_db.is_exist(query=item, category=self.category):

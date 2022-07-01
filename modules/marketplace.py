@@ -1,7 +1,9 @@
 import csv
+import requests
+import requests_random_user_agent
+
 from pprint import pprint
 from time import sleep
-
 from selenium.webdriver import Chrome
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
@@ -19,14 +21,27 @@ class Marketplace():
         self.main_driver = self.open_browser()
     
 
+    def randomize_user_agent(self):
+        s = requests.Session()
+        return s.headers['User-Agent']
+
+
     def set_options(self, full_screen=True, *args):
+        user_agent = self.randomize_user_agent()
+
         options = Options()
         options.add_argument('--disable-infobars')
         options.add_argument('--disable-extensions')
         options.add_argument('--disable-blink-features=AutomationControlled')
-        options.add_argument('--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.45 Safari/537.36"')
+        # options.add_argument('--user-agent={}'.format(user_agent))
         if full_screen:
             options.add_argument('--start-maximized')
+        else:
+            mobile_emulation = {
+                "deviceMetrics": { "width": 375, "height": 812, "pixelRatio": 3.0 },
+                "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19"
+            }
+            options.add_experimental_option("mobileEmulation", mobile_emulation)
         for arg in args:
             options.add_argument(arg)
         

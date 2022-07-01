@@ -33,8 +33,8 @@ def get_from_shopee(product_name, category, page_limit):
 
 def start_extract_products(product_name, category, page_limit):
     try:
-        get_from_shopee(product_name, category, page_limit)
-        get_from_blibli(product_name, category, page_limit)
+        # get_from_shopee(product_name, category, page_limit) # Shopee need to be fixed
+        # get_from_blibli(product_name, category, page_limit)
         get_from_tokopedia(product_name, category, page_limit)
             
     except Exception as e:
@@ -44,29 +44,33 @@ def start_extract_products(product_name, category, page_limit):
 
 if __name__ == '__main__':
 
-    #CPU
+    # #CPU
 
-    intel_series = ["i3", "i5", "i7", "i9"]
-    for intel in intel_series:
-        for gen in range(8, 12):
-            product = "intel core {} gen {}".format(intel, gen)
-            start_extract_products(product_name=product, category="cpu", page_limit=5)
+    # intel_series = ["i3", "i5", "i7", "i9"]
+    # for intel in intel_series:
+    #     for gen in range(8, 12):
+    #         product = "intel core {} gen {}".format(intel, gen)
+    #         start_extract_products(product_name=product, category="cpu", page_limit=5)
 
-    amd_series = ["athlon", "ryzen 3", "ryzen 5", "ryzen 7", "ryzen 9"]
-    for amd in amd_series:
-        product = "amd {}".format(amd)
-        start_extract_products(product_name=product, category="cpu", page_limit=5)
+
+    # amd_series = ["athlon", "ryzen 3", "ryzen 5", "ryzen 7", "ryzen 9"]
+    # for amd in amd_series:
+    #     product = "amd {}".format(amd)
+    #     start_extract_products(product_name=product, category="cpu", page_limit=5)
     
-    # GPU
+    # # GPU
 
-    for product in get_nvidia_gtx_gpu():
-        start_extract_products(product_name=product, category="gpu",page_limit=5)
+    # for product in get_nvidia_gtx_gpu():
+    #     start_extract_products(product_name=product, category="gpu",page_limit=5)
+    #     time.sleep(2)
     
-    for product in get_nvidia_rtx_gpu():
-        start_extract_products(product_name=product, category="gpu",page_limit=5)
+    # for product in get_nvidia_rtx_gpu():
+    #     start_extract_products(product_name=product, category="gpu",page_limit=5)
+    #     time.sleep(2)
     
     for product in get_amd_gpu():
         start_extract_products(product_name=product, category="gpu",page_limit=5)
+        time.sleep(2)
 
     # CASE
     start_extract_products(product_name='case pc desktop', category='case', page_limit=20)

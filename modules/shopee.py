@@ -52,10 +52,10 @@ class Shopee(Marketplace):
 
         itemid = find_item_id(link)
         shopid = find_shop_id(link)
-        print(itemid, shopid)
+        print("ITEM ID AND SHOP ID: ", itemid, shopid)
         shopee_api = ShopeeAPI()
         api_url = shopee_api.construct_url(shopid=shopid, itemid=itemid)
-        print(api_url)
+        print("API_URL", api_url)
         details = shopee_api.extract(api_url)
         price = details['data']['price']
 
@@ -103,12 +103,17 @@ class Shopee(Marketplace):
 
             self.scrolls(driver=self.main_driver)
             links = self.get_links()
-
+            tries = 0
             for link in links:
                 # Extract Items
                 try:
                     item = self.get_detail(link)
-                except:
+                except Exception as e:
+                    print("FOUND EXCEPTION: ", e)
+                    tries += 1
+                    if tries > 7:
+                        page = self.page_limit + 1
+                        break
                     continue
                 if item['title'] == '':
                     continue
@@ -118,9 +123,10 @@ class Shopee(Marketplace):
                 if is_desktop(item['title'], self.category):
                     self.product_db.add_product(item, category=self.category)
                     print("Saved to database")
-                page += 1
-
                 sleep(randint(0, 2))
+            
+            page += 1
+
 
         self.main_driver.close()
 

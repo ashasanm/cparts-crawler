@@ -38,10 +38,10 @@ def get_nvidia_rtx_gpu():
     name_scheme = {"prefix": "rtx",
                     "generation_min": 20,
                    "generation_max": 30,
-                   "perf_tier_min": 6,
+                   "perf_tier_min": 5,
                    "perf_tier_max": 9,                   
                    "revision": 0,
-                   "suffix": "Ti"}
+                   "suffix": ["Ti", "super"]}
     gpus = []
     listing = True
     generation = name_scheme["generation_min"]
@@ -57,10 +57,12 @@ def get_nvidia_rtx_gpu():
                 series = "{} {}{}{}".format(name_scheme["prefix"], generation, perf_tier, name_scheme["revision"])
                 gpus.append(series)
             else:
-                series = "{} {}{}{}".format(name_scheme["prefix"], generation, perf_tier, name_scheme["revision"])
-                gpus.append(series)
-                series = "{} {}{}{} {}".format(name_scheme["prefix"], generation, perf_tier, name_scheme["revision"], name_scheme["suffix"])
-                gpus.append(series)
+                for index, suffix in enumerate(name_scheme["suffix"]):
+                    if index == 0:
+                        series = "{} {}{}{}".format(name_scheme["prefix"], generation, perf_tier, name_scheme["revision"])
+                        gpus.append(series)
+                    series = "{} {}{}{} {}".format(name_scheme["prefix"], generation, perf_tier, name_scheme["revision"], suffix)
+                    gpus.append(series)
             perf_tier += 1
 
         generation += 10
@@ -73,10 +75,10 @@ def get_nvidia_rtx_gpu():
 
 def get_amd_gpu():
     amd = [
-        "rx 460","rx 470", "rx 480", 
-        "rx 550", "rx 560", "rx 570", "rx 580",
-        "rx 5500", "rx 5500 xt", "rx 5600", "rx 5600 xt", "rx 5700", "rx 5700 xt",
-        "rx 6600", "rx 6600 xt", "rx 6700 xt", "rx 6800", "rx 6800 xt", "rx 6900 xt" 
+        # "rx 460","rx 470", "rx 480", 
+        # "rx 550", "rx 560", "rx 570", "rx 580",
+        # "rx 5500", "rx 5500 xt", "rx 5600", "rx 5600 xt", "rx 5700", "rx 5700 xt",
+        "rx 6600", "rx 6500", "rx 6500 xt", "rx 6600 xt", "rx 6700 xt", "rx 6800", "rx 6800 xt", "rx 6900 xt" 
         ]
         
     return amd

@@ -30,7 +30,7 @@ def save_to_category_graph():
 
 
 if __name__ == '__main__':
-    Graphs().refresh_graph()
+    # Graphs().refresh_graph()
     save_to_graph_db()
-    Graphs().refresh_category()
+    # Graphs().refresh_category()
     save_to_category_graph()
