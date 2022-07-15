@@ -33,7 +33,8 @@ class Marketplace():
         options.add_argument('--disable-infobars')
         options.add_argument('--disable-extensions')
         options.add_argument('--disable-blink-features=AutomationControlled')
-        # options.add_argument('--user-agent={}'.format(user_agent))
+        options.add_argument("--incognito")
+        options.add_argument('--user-agent={}'.format(user_agent))
         if full_screen:
             options.add_argument('--start-maximized')
         else:

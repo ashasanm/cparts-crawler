@@ -55,11 +55,10 @@ class Shopee(Marketplace):
         print("ITEM ID AND SHOP ID: ", itemid, shopid)
         shopee_api = ShopeeAPI()
         api_url = shopee_api.construct_url(shopid=shopid, itemid=itemid)
+        print(api_url)
         print("API_URL", api_url)
         details = shopee_api.extract(api_url)
         price = details['data']['price']
-
-
 
         result = {
             'marketplace': 'shopee',

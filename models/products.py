@@ -2,8 +2,8 @@ from pymongo import MongoClient
 
 class Products():
     def __init__(self):
-        self.client = MongoClient("mongodb+srv://cpartproject:cparts1030@cluster0.zkpdz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
-        # self.client = MongoClient("mongodb://localhost", 27017)
+        # self.client = MongoClient("mongodb+srv://cpartproject:cparts1030@cluster0.zkpdz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+        self.client = MongoClient("mongodb://localhost", 27017)
         self.db = self.client['productsDB']
         self.gpu = self.db['gpu']
         self.cpu = self.db['cpu']

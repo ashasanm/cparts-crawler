@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime
 from random import randint
@@ -28,7 +29,7 @@ class Blibli(Marketplace):
         Return:
             a dictionary contains title, price, sold, city, and product url
         """
-
+        
         print("extract product info .. ")
         title_selector = '.product-name'
         price_selector = '.product-price > div.final-price > span'
@@ -58,6 +59,50 @@ class Blibli(Marketplace):
         pprint(result)
 
         return result
+    
+    def get_detail_by_json_data(self, product_json):
+        """ Extracting blibli data from blibli API response
+
+        Args:
+            product_json (dict): dictionary that contains product information
+
+        Returns:
+            dict:   data of title, price, sold, city, url and date
+        """
+        def fix_url(url):
+            return "https://www.blibli.com" + url
+            
+        print("\nProductJSON: ", product_json, "\n")
+
+        title = product_json.get('name', '')
+        item_url = fix_url(product_json.get('url'))
+        city = product_json.get('location', '')
+
+        if product_json.get('price'):
+            price = product_json['price'].get('priceDisplay', 0)
+        else:
+            price = 0
+
+        if product_json.get("soldRangeCount"):
+            sold = product_json['soldRangeCount'].get("id") or \
+                    product_json['soldRangeCount'].get("en")
+        else:
+            sold = 0
+
+        result = {
+            'marketplace': 'blibli',
+            'title': title,
+            'price': clean_price(price),
+            'sold': clean_sold(sold),
+            'city': city,
+            'link': item_url,
+            'extraction_date':datetime.now().strftime("%Y-%m-%d")
+        }
+
+        print("content extracted..")
+        pprint(result)
+
+        return result
 
 
     def get_links(self):
@@ -67,49 +112,79 @@ class Blibli(Marketplace):
         return links
 
 
-    def extract(self):
+    def extract(self, version=1):
         self.main_driver.get('https://blibli.com')
         searchbar_xpath = '/html/body/div[1]/div/header/div/div/div/div[1]/input'
         self.find_product(searchbar_xpath)
         base_search_url = self.main_driver.current_url
-        sub_driver = self.open_browser()
+        if version == 1:
+            sub_driver = self.open_browser()
         page = 1
         
         if self.get_maximum_page() < self.page_limit:
             self.page_limit = self.get_maximum_page()
         
         while page <= self.page_limit:
-            self.scrolls(driver=self.main_driver, scroll_num=4)
-            links = self.get_links()
-            print(links)
+            if version == 1:
+                self.scrolls(driver=self.main_driver, scroll_num=4)
+                links = self.get_links()
+                print(links)
 
-            # extracting details from new chrome windows
-            for link in links:
-                time.sleep(randint(1, 3))
-                sub_driver.get(link)
-                product = self.get_detail(sub_driver)
-                
-                if product['title'] == '':
-                    continue
-
-                print("check into databases..")
-                # Check if product already inside Database
-                if self.product_db.is_exist(query=product, category=self.category):
-                    print("item already exist!")
-                    continue
-                
-                print("check items..")
-                if is_desktop(product['title'], self.category):
-                    self.product_db.add_product(product, self.category)
-                    print("item saved..")
+                # extracting details from new chrome windows
+                for link in links:
+                    time.sleep(randint(1, 3))
+                    sub_driver.get(link)
+                    product = self.get_detail(sub_driver)
                     
-                time.sleep(randint(0, 3))
+                    if product['title'] == '':
+                        continue
 
-            page += 1
-            self.next_page(base_search_url, page)
+                    print("check into databases..")
+                    # Check if product already inside Database
+                    if self.product_db.is_exist(query=product, category=self.category):
+                        print("item already exist!")
+                        continue
+                    
+                    print("check items..")
+                    if is_desktop(product['title'], self.category):
+                        self.product_db.add_product(product, self.category)
+                        print("item saved..")
+                        
+                    time.sleep(randint(0, 3))
 
+                page += 1
+                self.next_page(base_search_url, page)
+
+            if version == 2:
+                self.request_blibli_api(page)
+                time.sleep(randint(3, 7))
+                blibli_json = self.main_driver.find_element_by_xpath("/html/body/pre").text
+                blibli_json = json.loads(blibli_json)
+                product_json = blibli_json['data']['products']
+                for product in product_json:
+                    product = self.get_detail_by_json_data(product_json=product)
+                    if product['title'] == '':
+                        continue
+
+                    print("check into databases..")
+                    # Check if product already inside Database
+                    if self.product_db.is_exist(query=product, category=self.category):
+                        print("item already exist!")
+                        continue
+                    
+                    print("check items..")
+                    if is_desktop(product['title'], self.category):
+                        self.product_db.add_product(product, self.category)
+                        print("item saved..")
+                        
+                    time.sleep(randint(1, 3))
+
+                page += 1
+                
+        if version == 1:
+            sub_driver.close()
         self.main_driver.close()
-        sub_driver.close()
+
 
     
     def get_maximum_page(self):
@@ -123,6 +198,15 @@ class Blibli(Marketplace):
             return 1
 
         return max_page 
+
+    def request_blibli_api(self, page):
+        api_url = "https://www.blibli.com/backend/search/products?sort=&page={}\
+                    &start=0&searchTerm={}\
+                    &intent=true&merchantSearch=true&multiCategory=true&customUrl=&=&channelId=web\
+                    &showFacet=false\
+                    &userIdentifier=657116261.U.4257873481588924.1656696567&isMobileBCA=false"\
+                    .format(page, self.product_name)
+        self.main_driver.get(api_url)
 
 
 

@@ -1,8 +1,11 @@
 import re
 
 def clean_price(price):
+    if type(price) is int:
+        return price
     if price == '':
         return ''
+
 
     number = [string for string in price if string.isdigit()]
     number = int(''.join(number))
@@ -11,6 +14,9 @@ def clean_price(price):
 
 
 def clean_sold(sold):
+    if type(sold) is int:
+        return sold
+
     if sold == '':
         return ''
 

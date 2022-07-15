@@ -11,19 +11,19 @@ from modules.shopee import Shopee
 from gpu_lists import get_amd_gpu, get_nvidia_gtx_gpu, get_nvidia_rtx_gpu
 
 
-def get_from_blibli(product_name, category, page_limit):
+def get_from_blibli(product_name, category, page_limit, version=1):
     blibli = Blibli(product_name, category,page_limit)
-    blibli_products = blibli.extract()
+    blibli_products = blibli.extract(version)
     
     return blibli_products
 
-def get_from_tokopedia(product_name, category, page_limit):
+def get_from_tokopedia(product_name, category, page_limit, version=1):
     tokopedia = Tokopedia(product_name, category, page_limit)
     tokopedia_products = tokopedia.extract()
 
     return tokopedia_products
 
-def get_from_shopee(product_name, category, page_limit):
+def get_from_shopee(product_name, category, page_limit, version=1):
     shopee = Shopee(product_name, category,page_limit)
     shopee_products = shopee.extract()
 
@@ -33,9 +33,9 @@ def get_from_shopee(product_name, category, page_limit):
 
 def start_extract_products(product_name, category, page_limit):
     try:
-        # get_from_shopee(product_name, category, page_limit) # Shopee need to be fixed
-        # get_from_blibli(product_name, category, page_limit)
-        get_from_tokopedia(product_name, category, page_limit)
+        get_from_shopee(product_name, category, page_limit) # Shopee need to be fixed
+        # get_from_blibli(product_name, category, page_limit, version=2)
+        # get_from_tokopedia(product_name, category, page_limit)
             
     except Exception as e:
         print("found an exception!")
@@ -44,29 +44,29 @@ def start_extract_products(product_name, category, page_limit):
 
 if __name__ == '__main__':
 
-    # #CPU
+    #CPU
 
-    # intel_series = ["i3", "i5", "i7", "i9"]
-    # for intel in intel_series:
-    #     for gen in range(8, 12):
-    #         product = "intel core {} gen {}".format(intel, gen)
-    #         start_extract_products(product_name=product, category="cpu", page_limit=5)
+    intel_series = ["i3", "i5", "i7", "i9"]
+    for intel in intel_series:
+        for gen in range(8, 12):
+            product = "intel core {} gen {}".format(intel, gen)
+            start_extract_products(product_name=product, category="cpu", page_limit=5)
 
 
-    # amd_series = ["athlon", "ryzen 3", "ryzen 5", "ryzen 7", "ryzen 9"]
-    # for amd in amd_series:
-    #     product = "amd {}".format(amd)
-    #     start_extract_products(product_name=product, category="cpu", page_limit=5)
+    amd_series = ["athlon", "ryzen 3", "ryzen 5", "ryzen 7", "ryzen 9"]
+    for amd in amd_series:
+        product = "amd {}".format(amd)
+        start_extract_products(product_name=product, category="cpu", page_limit=5)
     
-    # # GPU
+    # GPU
 
-    # for product in get_nvidia_gtx_gpu():
-    #     start_extract_products(product_name=product, category="gpu",page_limit=5)
-    #     time.sleep(2)
+    for product in get_nvidia_gtx_gpu():
+        start_extract_products(product_name=product, category="gpu",page_limit=5)
+        time.sleep(2)
     
-    # for product in get_nvidia_rtx_gpu():
-    #     start_extract_products(product_name=product, category="gpu",page_limit=5)
-    #     time.sleep(2)
+    for product in get_nvidia_rtx_gpu():
+        start_extract_products(product_name=product, category="gpu",page_limit=5)
+        time.sleep(2)
     
     for product in get_amd_gpu():
         start_extract_products(product_name=product, category="gpu",page_limit=5)
@@ -88,8 +88,5 @@ if __name__ == '__main__':
     # # MOTHERBOARD
     brands = ["amd", 'intel']
     for brand in brands:
-        start_extract_products(product_name='motherboard {}'.format(brand), category='motherboard', page_limit=30)
-
-    # PSU
-    
+        start_extract_products(product_name='motherboard {}'.format(brand), category='motherboard', page_limit=30)    
 
