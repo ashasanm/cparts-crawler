@@ -9,6 +9,7 @@ from modules.blibli import Blibli
 from modules.tokopedia import Tokopedia
 from modules.shopee import Shopee
 from gpu_lists import get_amd_gpu, get_nvidia_gtx_gpu, get_nvidia_rtx_gpu
+from convert_to_graph import start_convert
 
 
 def get_from_blibli(product_name, category, page_limit):
@@ -86,6 +87,7 @@ if __name__ == '__main__':
     for brand in brands:
         start_extract_products(product_name='motherboard {}'.format(brand), category='motherboard', page_limit=30)
 
-    # PSU
+    # Convert result into graph
+
     
 
