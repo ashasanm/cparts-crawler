@@ -16,10 +16,10 @@ class DBExtract():
         self.category = ['gpu', 'cpu', 'motherboard', 'case', 'memory', 'storage']
     
     def set_connection(self):
-        if self.connection_type is 'local':
+        if self.connection_type == 'local':
             print("Connecting to local database...")
             return MongoClient("mongodb://localhost", 27017)
-        if self.connection_type is 'live':
+        if self.connection_type == 'live':
             print("Connecting to live database...")
             return MongoClient("mongodb+srv://cpartproject:cparts1030@cluster0.zkpdz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         else:
@@ -40,7 +40,7 @@ class DBExtract():
                 "cpu": self.cpu.find(query),
                 "case": self.case.find(query),
                 "memory": self.memory.find(query),
-                "storage": self.storage.find(query),
+                "storage": self.storage.find(query),~
                 "motherboard": self.motherboard.find(query)
             }
         
@@ -56,7 +56,18 @@ class DBExtract():
                 json.dump(cat_data, f)
             print(self.connection_type + " " + cat + " saved!")
         print("Done!")
+    
+    def insert_from_json(self, json_path, collection_name):
+        with open(json_path) as file_json:
+            data = json.load(file_json)
+            print(f"Inserting {collection_name} data into database..")
+            self.db[collection_name].insert_many(data)
+            print("data imported")
 
 if __name__ == '__main__':
-    dbextract = DBExtract(connection_type='live')
-    dbextract.save_to_json()
+
+    dbextract = DBExtract(connection_type='local')
+    # dbextract.save_to_json()
+    for cat in ['case', 'cpu', 'case', 'gpu', 'memory', 'motherboard', 'storage']:
+            json_path = f"/Users/mymac/Documents/kuliah/semester_7/cparts/cparts-crawler/scripts/extracted_db/live/{cat}.json"
+            dbextract.insert_from_json(json_path, collection_name=cat)

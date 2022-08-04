@@ -13,6 +13,9 @@ class Products():
         self.storage = self.db['storage']
         self.motherboard = self.db['motherboard']
 
+    def add_products(self, products: list, category):
+        self.db[category].insert_many(products)
+
     def add_product(self, product: dict, category: str):
         """ add user into mongoDB """
         if category == "gpu":
@@ -51,49 +54,6 @@ class Products():
             return self.db[category].find(query, {"_id": 0})
 
         return self.db[category].find({}, {"_id": 0})
-
-    def get_products_with_aggregate(self, category: str, month:str, year_filter: str = None, count_by:str = 'avg'):
-        this_collection = self.db[category]
-        if len(month) >= 1:
-            text_month = f"-0{month}-"
-        else:
-            text_month = f"-{month}-"
-        aggregate_query = [
-                            {
-                                '$match': {
-                                    'extraction_date': {
-                                        '$regex': year_filter
-                                    }
-                                }
-                            }, {
-                                '$addFields': {
-                                    'foundMonth': {
-                                        '$regexFind': {
-                                            'input': '$extraction_date', 
-                                            'regex': text_month
-                                        }
-                                    }, 
-                                    'foundYear': {
-                                        '$regexFind': {
-                                            'input': '$extraction_date', 
-                                            'regex': year_filter
-                                        }
-                                    }
-                                }
-                            }, {
-                                '$group': {
-                                    '_id': {
-                                        'month': '$foundMonth', 
-                                        'year': '$foundYear'
-                                    }, 
-                                    'result': {
-                                        f'${count_by}': '$price'
-                                    }
-                                }
-                            }
-                        ]
-        q_aggregation = this_collection.aggregate(aggregate_query)
-        return list(q_aggregation)
 
     def is_exist(self, query: dict, category: str):
         if category == 'gpu':
@@ -151,43 +111,6 @@ class Products():
                  "extraction_date": {"$regex": year_filter}}
         collection = self.get_collection_by_category(category)
         return collection.find(query)
-
-    def get_cat_graph(self, count_by, month, category, year_filter):
-        this_collection = self.db[category]
-        if len(month) >= 1:
-            text_month = f"-0{month}-"
-        else:
-            text_month = f"-{month}-"
-        aggregate_query = [
-                            {
-                                '$match': {
-                                    'extraction_date': {
-                                        '$regex': year_filter
-                                    }
-                                }
-                            }, {
-                                '$addFields': {
-                                    'foundMonth': {
-                                        '$regexMatch': {
-                                            'input': '$extraction_date', 
-                                            'regex': text_month
-                                        }
-                                    }
-                                }
-                            }, {
-                                '$group': {
-                                    '_id': {
-                                        'month': '$foundMonth', 
-                                        'marketplace': '$marketplace'
-                                    }, 
-                                    'result': {
-                                        f'${count_by}': '$price'
-                                    }
-                                }
-                            }
-                        ]
-        q_aggregation = this_collection.aggregate(aggregate_query)
-        return list(q_aggregation)
 
     # def get_average(self, category: str, date: str):
     #     if category == "gpu":

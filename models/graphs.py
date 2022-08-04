@@ -6,8 +6,8 @@ from .products import Products
 
 class Graphs():
     def __init__(self):
-        # self.client = MongoClient("mongodb://localhost", 27017)
-        self.client = MongoClient("mongodb+srv://cpartproject:cparts1030@cluster0.zkpdz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+        self.client = MongoClient("mongodb://localhost", 27017)
+        # self.client = MongoClient("mongodb+srv://cpartproject:cparts1030@cluster0.zkpdz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         self.db = self.client['graphDB']
         self.monthly = self.db['monthly']
         self.category = self.db['category']
@@ -15,11 +15,19 @@ class Graphs():
 
 
     def add_graph_data(self, product: dict):
+        if product.get('_id'):
+            del product['_id']
+        print("\nInserting ", product)
         self.monthly.insert_one(product)
+        print("done!")
 
 
     def add_category(self, product: dict):
+        if product.get('_id'):
+            del product['_id']
+        print("\nInserting ", product)
         self.category.insert_one(product)
+        print("done!")
 
 
     def refresh_graph(self):
